@@ -37,6 +37,7 @@ function defaultCellStyle(cell) {
     cell.style.color = 'black'
 }
 
+/* styles the button */
 function buttonStyle(button) {
     button.style.height = '45px'
     button.style.width = '45px'
