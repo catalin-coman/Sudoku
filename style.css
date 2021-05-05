@@ -16,6 +16,9 @@ h1 {
     top: 20%;
     left: 50%;
     margin-left: -225px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
 }
 
 .inputNumbersDiv {
@@ -23,5 +26,14 @@ h1 {
     width: 450px;
     top: 70%;
     left: 50%;
-    margin-left: -218px;
+    margin-left: -225px;
+}
+
+table {
+    align-self: center;
+}
+
+td {
+    cursor: pointer;
+    vertical-align: middle;
 }
