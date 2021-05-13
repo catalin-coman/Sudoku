@@ -1,5 +1,5 @@
 gameStatus = {
-
+    grid_ids : []
 }
 
 /* creates table with rows and cells */
@@ -12,6 +12,10 @@ function createGame() {
         for (let j = 0; j < 9; j++) {
             let rowCell = tableRow.insertCell(j)
             rowCell.id = (i + 1) * 10 + j + 1
+            
+            /* adding the id to the id's array */
+            gameStatus.grid_ids.push(rowCell.id)
+            
             defaultCellStyle(rowCell)
         }
     }
