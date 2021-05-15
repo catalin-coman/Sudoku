@@ -60,6 +60,68 @@ function createGame() {
     }
 }
 
+/* adding random number to the board */
+function addNumbers() {
+
+    let difficulty = 3
+
+    while (difficulty > 0) {
+        for (id of gameStatus.grid_ids) {
+            document.getElementById(id).innerHTML = randomNumberGenerator(1, 9)
+        }
+
+        -- difficulty
+    }
+
+}
+
+/* selects the cell's row, collumn and square */
+function vecinitySelect(cell_id) {
+
+    /* selecting the row */
+    for (let row of gameStatus.rows) {
+        if (row.includes(cell_id)) {
+            if (cellCheck(row, cell_id)) {
+                badInput(cell_id)
+            }
+        }
+    }
+
+    /* selecting the collumn */
+    for (let collumn of gameStatus.collumns) {
+        if (collumn.includes(cell_id)) {
+            if (cellCheck(collumn, cell_id)) {
+                badInput(cell_id)
+            }
+        }
+    }
+
+    /* selecting the square */
+    for (let square of gameStatus.squares) {
+        if (square.includes(cell_id)) {
+            if (cellCheck(square, cell_id)) {
+                badInput(cell_id)
+            }
+        }
+    }
+
+    return false
+
+}
+
+/* checks the current cell */
+function cellCheck(game_array, cell_id) {
+
+    let checked_cell = document.getElementById(cell_id)
+    for (let id of game_array) {
+        let current_cell = document.getElementById(id)
+        if (current_cell.innerHTML == checked_cell.innerHTML) {
+            return true
+        }
+    }
+
+}
+
 /* adding click events to cells */
 function cellClickEvent() {
 
@@ -81,6 +143,8 @@ function cellKeyboardEvent() {
     /* 1 --> 9 to input numbers, space to delete */
     window.addEventListener( 'keypress' , function () {
         document.getElementById(clickedCell.id).innerHTML = event.key
+        vecinitySelect(parseInt(clickedCell.id))
+        console.log(parseInt(clickedCell.id))
     })
 
 }
@@ -88,24 +152,22 @@ function cellKeyboardEvent() {
 /* selects the row, column and square nearby cells */
 function selectCells(cell_id) {
 
-    /* row cells left */
-    for (let cell_id_left = --cell_id; gameStatus.grid_ids.includes(cell_id_left); --cell_id_left) {
-        clickedCellStyle(cell_id_left)
+    /* rows */
+    for (let row of gameStatus.rows) {
+        if (row.includes(cell_id)) {
+            for (let id of row) {
+                clickedCellStyle(id)
+            }
+        }
     }
 
-    /* row cells right */
-    for (let cell_id_right = ++cell_id; gameStatus.grid_ids.includes(cell_id_right); ++cell_id_right) {
-        clickedCellStyle(cell_id_right)
-    }
-
-    /* collumn cells upper */
-    for (let cell_id_upper = cell_id - 10; gameStatus.grid_ids.includes(cell_id_upper); cell_id_upper -= 10) {
-        clickedCellStyle(cell_id_upper)
-    }
-
-    /* collumn cells down */
-    for (let cell_id_down = cell_id + 10; gameStatus.grid_ids.includes(cell_id_down); cell_id_down += 10) {
-        clickedCellStyle(cell_id_down)
+    /* collumns */
+    for (let collumn of gameStatus.collumns) {
+        if (collumn.includes(cell_id)) {
+            for (let id of collumn) {
+                clickedCellStyle(id)
+            }
+        }
     }
 
     /* squares */
@@ -120,24 +182,23 @@ function selectCells(cell_id) {
 
 /* unselects nearby, row and collumn cells */
 function unselectCells(cell_id) {
-    /* row cells left */
-    for (let cell_id_left = --cell_id; gameStatus.grid_ids.includes(cell_id_left); --cell_id_left) {
-        defaultCellStyle(cell_id_left)
+
+    /* rows */
+    for (let row of gameStatus.rows) {
+        if (row.includes(cell_id)) {
+            for (let id of row) {
+                defaultCellStyle(id)
+            }
+        }
     }
 
-    /* row cells right */
-    for (let cell_id_right = ++cell_id; gameStatus.grid_ids.includes(cell_id_right); ++cell_id_right) {
-        defaultCellStyle(cell_id_right)
-    }
-
-    /* collumn cells upper */
-    for (let cell_id_upper = cell_id - 10; gameStatus.grid_ids.includes(cell_id_upper); cell_id_upper -= 10) {
-        defaultCellStyle(cell_id_upper)
-    }
-
-    /* collumn cells down */
-    for (let cell_id_down = cell_id + 10; gameStatus.grid_ids.includes(cell_id_down); cell_id_down += 10) {
-        defaultCellStyle(cell_id_down)
+    /* collumns */
+    for (let collumn of gameStatus.collumns) {
+        if (collumn.includes(cell_id)) {
+            for (let id of collumn) {
+                defaultCellStyle(id)
+            }
+        }
     }
 
     /* squares */
@@ -161,4 +222,14 @@ function defaultCellStyle(cell_id) {
 /* styles the clicked cell */
 function clickedCellStyle(cell_id) {
     document.getElementById(cell_id).style.background = "lightgrey"
+}
+
+/* styles the badInput cell */
+function badInput(cell_id) {
+    document.getElementById(cell_id).style.color = 'red'
+}
+
+/* generates a random whole number between min and max */
+function randomNumberGenerator(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min
 }
