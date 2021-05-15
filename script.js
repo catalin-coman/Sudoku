@@ -1,5 +1,7 @@
 var gameStatus = {
     grid_ids: [],
+    input_ids: [],
+    bad_input_ids: [],
     squares: [
         square1 = [11, 12, 13, 21, 22, 23, 31, 32, 33],
         square2 = [14, 15, 16, 24, 25, 26, 34, 35, 36],
@@ -54,23 +56,37 @@ function createGame() {
             gameStatus.grid_ids.push(parseInt(rowCell.id))
 
             defaultCellStyle(rowCell.id)
-
             rowCell.addEventListener('mouseover', function (e) { clickedCell = e.target; })
         }
     }
+    addNumbers()
+    eraseBadNumbers()
 }
 
 /* adding random number to the board */
 function addNumbers() {
 
-    let difficulty = 3
+    let difficulty = 10
 
-    while (difficulty > 0) {
-        for (id of gameStatus.grid_ids) {
-            document.getElementById(id).innerHTML = randomNumberGenerator(1, 9)
+    for (id of gameStatus.grid_ids) {
+        document.getElementById(id).innerHTML = randomNumberGenerator(1, difficulty)
+        if (document.getElementById(id).innerHTML > 9) {
+            document.getElementById(id).innerHTML = null
         }
+    }
 
-        -- difficulty
+}
+
+/* checks the grid for bad initial inputs and erases them */
+function eraseBadNumbers() {
+
+    for (id of gameStatus.grid_ids) {
+        if (vecinitySelect(id)) {
+            document.getElementById(id).innerHTML = null
+        }
+        else {
+            gameStatus.input_ids.push(id)
+        }
     }
 
 }
@@ -82,7 +98,8 @@ function vecinitySelect(cell_id) {
     for (let row of gameStatus.rows) {
         if (row.includes(cell_id)) {
             if (cellCheck(row, cell_id)) {
-                badInput(cell_id)
+                badInputStyle(cell_id)
+                return true
             }
         }
     }
@@ -91,7 +108,8 @@ function vecinitySelect(cell_id) {
     for (let collumn of gameStatus.collumns) {
         if (collumn.includes(cell_id)) {
             if (cellCheck(collumn, cell_id)) {
-                badInput(cell_id)
+                badInputStyle(cell_id)
+                return true
             }
         }
     }
@@ -100,7 +118,8 @@ function vecinitySelect(cell_id) {
     for (let square of gameStatus.squares) {
         if (square.includes(cell_id)) {
             if (cellCheck(square, cell_id)) {
-                badInput(cell_id)
+                badInputStyle(cell_id)
+                return true
             }
         }
     }
@@ -109,17 +128,23 @@ function vecinitySelect(cell_id) {
 
 }
 
-/* checks the current cell */
+/* checks the equality of cells in the array and the current cell */
 function cellCheck(game_array, cell_id) {
 
+    /* the counter stores the number of cells that are
+    equal to the current cell (current cell is always equal to it) */
+
+    let cnt = 0
     let checked_cell = document.getElementById(cell_id)
+
     for (let id of game_array) {
         let current_cell = document.getElementById(id)
         if (current_cell.innerHTML == checked_cell.innerHTML) {
-            return true
+            ++cnt
         }
     }
 
+    return cnt >= 2
 }
 
 /* adding click events to cells */
@@ -133,6 +158,7 @@ function cellClickEvent() {
     /* mouse up */
     window.addEventListener('mouseup', function () {
         unselectCells(parseInt(clickedCell.id))
+        checkWin()
     })
 
 }
@@ -141,10 +167,11 @@ function cellClickEvent() {
 function cellKeyboardEvent() {
 
     /* 1 --> 9 to input numbers, space to delete */
-    window.addEventListener( 'keypress' , function () {
+    window.addEventListener('keypress', function () {
         document.getElementById(clickedCell.id).innerHTML = event.key
-        vecinitySelect(parseInt(clickedCell.id))
-        console.log(parseInt(clickedCell.id))
+        if (!vecinitySelect(parseInt(clickedCell.id))) {
+            gameStatus.input_ids.push(parseInt(clickedCell.id))
+        }
     })
 
 }
@@ -211,6 +238,14 @@ function unselectCells(cell_id) {
     }
 }
 
+/* checks win after input */
+function checkWin() {
+    if (gameStatus.grid_ids.length == gameStatus.input_ids.length) {
+        alert("You WON!")
+        document.location.reload()
+    }
+}
+
 /* styles the table cells as default */
 function defaultCellStyle(cell_id) {
     document.getElementById(cell_id).style.background = 'white'
@@ -225,11 +260,12 @@ function clickedCellStyle(cell_id) {
 }
 
 /* styles the badInput cell */
-function badInput(cell_id) {
+function badInputStyle(cell_id) {
     document.getElementById(cell_id).style.color = 'red'
+    gameStatus.bad_input_ids.push(cell_id)
 }
 
 /* generates a random whole number between min and max */
 function randomNumberGenerator(min, max) {
-	return Math.floor(Math.random() * (max - min + 1)) + min
+    return Math.floor(Math.random() * (max - min + 1)) + min
 }
