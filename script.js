@@ -63,6 +63,31 @@ function createGame() {
     eraseBadNumbers()
 }
 
+/* adding click events to cells */
+function cellClickEvent() {
+
+    /* mouse down */
+    window.addEventListener('click', function () {
+        unselectCells()
+        selectCells(parseInt(clickedCell.id))
+        clickedCellStyle(clickedCell.id)
+    })
+
+}
+
+/* adds keyboard event to cell */
+function cellKeyboardEvent() {
+
+    /* 1 --> 9 to input numbers, space to delete */
+    window.addEventListener('keypress', function () {
+        document.getElementById(clickedCell.id).innerHTML = event.key
+        if (!vecinitySelect(parseInt(clickedCell.id))) {
+            gameStatus.input_ids.push(parseInt(clickedCell.id))
+        }
+    })
+
+}
+
 /* adding random number to the board */
 function addNumbers() {
 
@@ -147,35 +172,6 @@ function cellCheck(game_array, cell_id) {
     return cnt >= 2
 }
 
-/* adding click events to cells */
-function cellClickEvent() {
-
-    /* mouse down */
-    window.addEventListener('mousedown', function () {
-        selectCells(parseInt(clickedCell.id))
-    })
-
-    /* mouse up */
-    window.addEventListener('mouseup', function () {
-        unselectCells(parseInt(clickedCell.id))
-        checkWin()
-    })
-
-}
-
-/* adds keyboard event to cell */
-function cellKeyboardEvent() {
-
-    /* 1 --> 9 to input numbers, space to delete */
-    window.addEventListener('keypress', function () {
-        document.getElementById(clickedCell.id).innerHTML = event.key
-        if (!vecinitySelect(parseInt(clickedCell.id))) {
-            gameStatus.input_ids.push(parseInt(clickedCell.id))
-        }
-    })
-
-}
-
 /* selects the row, column and square nearby cells */
 function selectCells(cell_id) {
 
@@ -183,7 +179,7 @@ function selectCells(cell_id) {
     for (let row of gameStatus.rows) {
         if (row.includes(cell_id)) {
             for (let id of row) {
-                clickedCellStyle(id)
+                selectedCellStyle(id)
             }
         }
     }
@@ -192,7 +188,7 @@ function selectCells(cell_id) {
     for (let collumn of gameStatus.collumns) {
         if (collumn.includes(cell_id)) {
             for (let id of collumn) {
-                clickedCellStyle(id)
+                selectedCellStyle(id)
             }
         }
     }
@@ -201,41 +197,19 @@ function selectCells(cell_id) {
     for (let square of gameStatus.squares) {
         if (square.includes(cell_id)) {
             for (let id of square) {
-                clickedCellStyle(id)
+                selectedCellStyle(id)
             }
         }
     }
 }
 
 /* unselects nearby, row and collumn cells */
-function unselectCells(cell_id) {
+function unselectCells() {
 
-    /* rows */
-    for (let row of gameStatus.rows) {
-        if (row.includes(cell_id)) {
-            for (let id of row) {
-                defaultCellStyle(id)
-            }
-        }
+    for (id of gameStatus.grid_ids) {
+        defaultCellStyle(id)
     }
 
-    /* collumns */
-    for (let collumn of gameStatus.collumns) {
-        if (collumn.includes(cell_id)) {
-            for (let id of collumn) {
-                defaultCellStyle(id)
-            }
-        }
-    }
-
-    /* squares */
-    for (let square of gameStatus.squares) {
-        if (square.includes(cell_id)) {
-            for (let id of square) {
-                defaultCellStyle(id)
-            }
-        }
-    }
 }
 
 /* checks win after input */
@@ -254,9 +228,14 @@ function defaultCellStyle(cell_id) {
     document.getElementById(cell_id).style.color = 'black'
 }
 
+/* styles the selected cells */
+function selectedCellStyle(cell_id) {
+    document.getElementById(cell_id).style.background = "lightgrey"
+}
+
 /* styles the clicked cell */
 function clickedCellStyle(cell_id) {
-    document.getElementById(cell_id).style.background = "lightgrey"
+    document.getElementById(cell_id).style.background = 'grey'
 }
 
 /* styles the badInput cell */
