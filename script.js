@@ -51,17 +51,22 @@ function createGame() {
         for (let j = 0; j < 9; j++) {
             let rowCell = tableRow.insertCell(j)
             rowCell.id = (i + 1) * 10 + j + 1
+            rowCell.innerHTML = null
 
             /* adding the id to the id's array */
             gameStatus.grid_ids.push(parseInt(rowCell.id))
+            gameStatus.good_input_ids.push(parseInt(rowCell.id))
 
             defaultCellStyle(rowCell.id)
             rowCell.addEventListener('click', function (e) { clickedCell = e.target; })
         }
     }
 
-    /* checking for bad inputs */
+    addRandomNumbers()
+
+    /* checking for bad inputs every 5 miliseconds */
     window.setInterval(badInputStyle, 5)
+
 }
 
 /* adding click events to cells */
@@ -87,7 +92,24 @@ function cellKeyboardEvent() {
 
 }
 
-/* adding random number to the board */
+/* adding random numbers to the gameboard */
+function addRandomNumbers() {
+    let completed = 0
+    while (completed == 0) {
+        completed = 1
+        for (id of gameStatus.grid_ids) {
+            let current_cell = document.getElementById(id)
+            if (!current_cell.innerHTML) {
+                current_cell.innerHTML = randomNumberGenerator(1, 9)
+            }
+            if (vecinitySelect(id)) {
+                current_cell.innerHTML = null
+            }
+        }
+    }
+}
+
+/* adding input number to the gameboard */
 function addNumber(cell_id) {
 
     if (!vecinitySelect(cell_id)) {
