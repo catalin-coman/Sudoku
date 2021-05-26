@@ -55,7 +55,6 @@ function createGame() {
 
             /* adding the id to the id's array */
             gameStatus.grid_ids.push(parseInt(rowCell.id))
-            gameStatus.good_input_ids.push(parseInt(rowCell.id))
 
             defaultCellStyle(rowCell.id)
             rowCell.addEventListener('click', function (e) { clickedCell = e.target; })
@@ -171,8 +170,10 @@ function cellCheck(game_array, cell_id) {
 
     for (let id of game_array) {
         let current_cell = document.getElementById(id)
-        if (current_cell.innerHTML == checked_cell.innerHTML) {
-            ++cnt
+        if (current_cell.innerHTML) {
+            if (current_cell.innerHTML == checked_cell.innerHTML) {
+                ++cnt
+            }
         }
     }
 
