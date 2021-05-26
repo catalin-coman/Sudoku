@@ -56,7 +56,7 @@ function createGame() {
             gameStatus.grid_ids.push(parseInt(rowCell.id))
 
             defaultCellStyle(rowCell.id)
-            rowCell.addEventListener('mouseover', function (e) { clickedCell = e.target; })
+            rowCell.addEventListener('click', function (e) { clickedCell = e.target; })
         }
     }
 
