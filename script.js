@@ -61,7 +61,7 @@ function createGame() {
         }
     }
 
-    addRandomNumbers()
+    generateBoardNumbers()
 
     /* checking for bad inputs every 5 miliseconds */
     window.setInterval(badInputStyle, 5)
@@ -92,26 +92,44 @@ function cellKeyboardEvent() {
 }
 
 /* adding random numbers to the gameboard */
-function addRandomNumbers() {
-    let completed = 0
-    while (completed == 0) {
-        completed = 1
-        for (id of gameStatus.grid_ids) {
-            let current_cell = document.getElementById(id)
-            if (!current_cell.innerHTML) {
-                current_cell.innerHTML = randomNumberGenerator(1, 9)
-            }
-            if (vecinitySelect(id)) {
+function generateBoardNumbers() {
+
+    for (let id of gameStatus.squares[0]) {
+        let current_cell = document.getElementById(id)
+        while (!current_cell.innerHTML) {
+            current_cell.innerHTML = randomNumberGenerator(1, 9)
+            if (badInput(id)) {
                 current_cell.innerHTML = null
             }
         }
     }
+
+    for (let id of gameStatus.squares[4]) {
+        let current_cell = document.getElementById(id)
+        while (!current_cell.innerHTML) {
+            current_cell.innerHTML = randomNumberGenerator(1, 9)
+            if (badInput(id)) {
+                current_cell.innerHTML = null
+            }
+        }
+    }
+
+    for (let id of gameStatus.squares[8]) {
+        let current_cell = document.getElementById(id)
+        while (!current_cell.innerHTML) {
+            current_cell.innerHTML = randomNumberGenerator(1, 9)
+            if (badInput(id)) {
+                current_cell.innerHTML = null
+            }
+        }
+    }
+
 }
 
 /* adding input number to the gameboard */
 function addNumber(cell_id) {
 
-    if (!vecinitySelect(cell_id)) {
+    if (!badInput(cell_id)) {
 
         /* avoiding double inclusion of the same cell id */
         if (!gameStatus.good_input_ids.includes(cell_id)) {
@@ -123,7 +141,7 @@ function addNumber(cell_id) {
 }
 
 /* selects the cell's row, collumn and square */
-function vecinitySelect(cell_id) {
+function badInput(cell_id) {
 
     /* selecting the row */
     for (let row of gameStatus.rows) {
@@ -139,7 +157,7 @@ function vecinitySelect(cell_id) {
     for (let collumn of gameStatus.collumns) {
         if (collumn.includes(cell_id)) {
             if (cellCheck(collumn, cell_id)) {
-                gameStatus.bad_input_ids.push(cell_id)                
+                gameStatus.bad_input_ids.push(cell_id)
                 return true
             }
         }
@@ -149,7 +167,7 @@ function vecinitySelect(cell_id) {
     for (let square of gameStatus.squares) {
         if (square.includes(cell_id)) {
             if (cellCheck(square, cell_id)) {
-                gameStatus.bad_input_ids.push(cell_id)                
+                gameStatus.bad_input_ids.push(cell_id)
                 return true
             }
         }
@@ -252,7 +270,7 @@ function badInputStyle() {
     for (id of gameStatus.bad_input_ids) {
         document.getElementById(id).style.color = 'red'
     }
-    
+
 }
 
 /* generates a random whole number between min and max */
