@@ -63,8 +63,8 @@ function createGame() {
 
     generateBoardNumbers()
 
-    /* checking for bad inputs every 5 miliseconds */
-    window.setInterval(badInputStyle, 5)
+    /* checking for bad inputs every 500 miliseconds */
+    window.setInterval(badInputStyle, 500)
 
 }
 
@@ -94,6 +94,9 @@ function cellKeyboardEvent() {
 /* adding random numbers to the gameboard */
 function generateBoardNumbers() {
 
+    /* generating the main diagonal */
+
+    /* generating the first square */
     for (let id of gameStatus.squares[0]) {
         let current_cell = document.getElementById(id)
         while (!current_cell.innerHTML) {
@@ -104,6 +107,7 @@ function generateBoardNumbers() {
         }
     }
 
+    /* generating the 5th square */
     for (let id of gameStatus.squares[4]) {
         let current_cell = document.getElementById(id)
         while (!current_cell.innerHTML) {
@@ -114,6 +118,7 @@ function generateBoardNumbers() {
         }
     }
 
+    /* generating the 9th square */
     for (let id of gameStatus.squares[8]) {
         let current_cell = document.getElementById(id)
         while (!current_cell.innerHTML) {
@@ -147,7 +152,10 @@ function badInput(cell_id) {
     for (let row of gameStatus.rows) {
         if (row.includes(cell_id)) {
             if (cellCheck(row, cell_id)) {
-                gameStatus.bad_input_ids.push(cell_id)
+                /* avoiding double inclusion in array */
+                if (!gameStatus.bad_input_ids.includes(cell_id)) {
+                    gameStatus.bad_input_ids.push(cell_id)
+                }
                 return true
             }
         }
@@ -157,7 +165,9 @@ function badInput(cell_id) {
     for (let collumn of gameStatus.collumns) {
         if (collumn.includes(cell_id)) {
             if (cellCheck(collumn, cell_id)) {
-                gameStatus.bad_input_ids.push(cell_id)
+                if (!gameStatus.bad_input_ids.includes(cell_id)) {
+                    gameStatus.bad_input_ids.push(cell_id)
+                }
                 return true
             }
         }
@@ -167,12 +177,15 @@ function badInput(cell_id) {
     for (let square of gameStatus.squares) {
         if (square.includes(cell_id)) {
             if (cellCheck(square, cell_id)) {
-                gameStatus.bad_input_ids.push(cell_id)
+                if (!gameStatus.bad_input_ids.includes(cell_id)) {
+                    gameStatus.bad_input_ids.push(cell_id)
+                }
                 return true
             }
         }
     }
 
+    gameStatus.bad_input_ids.splice(gameStatus.bad_input_ids.indexOf(cell_id), 1)
     return false
 
 }
@@ -270,7 +283,7 @@ function badInputStyle() {
     for (id of gameStatus.bad_input_ids) {
         document.getElementById(id).style.color = 'red'
     }
-
+    console.log('5')
 }
 
 /* generates a random whole number between min and max */
