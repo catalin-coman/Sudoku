@@ -87,6 +87,9 @@ function cellKeyboardEvent() {
     window.addEventListener('keypress', function () {
         document.getElementById(clickedCell.id).innerHTML = event.key
         addNumber(parseInt(clickedCell.id))
+        if (event.key == ' ') {
+            document.getElementById(clickedCell.id).innerHTML = null
+        }
     })
 
 }
@@ -185,6 +188,7 @@ function badInput(cell_id) {
         }
     }
 
+    /* removing the id from bad input */
     gameStatus.bad_input_ids.splice(gameStatus.bad_input_ids.indexOf(cell_id), 1)
     return false
 
@@ -283,7 +287,7 @@ function badInputStyle() {
     for (id of gameStatus.bad_input_ids) {
         document.getElementById(id).style.color = 'red'
     }
-    console.log('5')
+    console.log(gameStatus.bad_input_ids)
 }
 
 /* generates a random whole number between min and max */
