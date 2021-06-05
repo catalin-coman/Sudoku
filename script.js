@@ -61,10 +61,8 @@ function createGame() {
         }
     }
 
-    generateBoardNumbers()
-    generateAdditionalNumbers()
+    generateGrid()
 
-    /* checking for bad inputs every 500 miliseconds */
     window.setInterval(badInputStyle, 500)
 
 }
@@ -86,56 +84,37 @@ function cellKeyboardEvent() {
 
     /* 1 --> 9 to input numbers, space to delete */
     window.addEventListener('keypress', function () {
-        document.getElementById(clickedCell.id).innerHTML = event.key
-        addNumber(parseInt(clickedCell.id))
+        let current_cell = document.getElementById(parseInt(clickedCell.id))
+        current_cell.innerHTML = event.key
         if (event.key == ' ') {
-            document.getElementById(clickedCell.id).innerHTML = null
+            current_cell.innerHTML = null
         }
+        inputCheck(parseInt(current_cell.id), parseInt(current_cell.innerHTML))
+
     })
 
 }
 
-/* adding random numbers to the gameboard */
-function generateBoardNumbers() {
-
-    /* generating the main diagonal */
+/* generating the sudoku board */
+function generateGrid() {
 
     /* generating the first square */
     for (let id of gameStatus.squares[0]) {
         let current_cell = document.getElementById(id)
         while (!current_cell.innerHTML) {
             let number = randomNumberGenerator(1, 9)
-            if (!badInput(id, number)) {
+            if (!inputCheck(id, number)) {
                 current_cell.innerHTML = number
             }
         }
     }
 
-    /* generating the 5th square */
-    for (let id of gameStatus.squares[4]) {
-        let current_cell = document.getElementById(id)
-        while (!current_cell.innerHTML) {
-            let number = randomNumberGenerator(1, 9)
-            if (!badInput(id, number)) {
-                current_cell.innerHTML = number
-            }
-        }
-    }
-
-    /* generating the 9th square */
-    for (let id of gameStatus.squares[8]) {
-        let current_cell = document.getElementById(id)
-        while (!current_cell.innerHTML) {
-            let number = randomNumberGenerator(1, 9)
-            if (!badInput(id, number)) {
-                current_cell.innerHTML = number
-            }
-        }
-    }
+    generateAdditionalNumbers()
+    removeNumbers()
 
 }
 
-/* completes the board inputs */
+/* completes the board generation */
 function generateAdditionalNumbers() {
     let cell_id = parseInt(findEmptyCell())
     if (!cell_id) {
@@ -143,7 +122,7 @@ function generateAdditionalNumbers() {
     } else {
         for (let number = 1; number < 10; ++number) {
             let current_cell = document.getElementById(cell_id)
-            if (!badInput(cell_id, number)) {
+            if (!inputCheck(cell_id, number)) {
                 current_cell.innerHTML = number
 
                 if (generateAdditionalNumbers()) {
@@ -160,6 +139,20 @@ function generateAdditionalNumbers() {
     }
 }
 
+/* removes 'cnt' numbers from the board after generation */
+function removeNumbers() {
+    let cnt = 20
+
+    while (cnt > 0) {
+        let cell_id = randomNumberGenerator(11, 99)
+        if (gameStatus.grid_ids.includes(cell_id)) {
+            if (document.getElementById(cell_id).innerHTML) {
+                document.getElementById(cell_id).innerHTML = null
+                -- cnt
+            }
+        }
+    }
+}
 
 /* checks if we have empty cells in game array */
 function findEmptyCell() {
@@ -172,27 +165,13 @@ function findEmptyCell() {
     return null
 }
 
-/* adding input number to the gameboard */
-function addNumber(cell_id) {
-
-    if (!badInput(cell_id)) {
-
-        /* avoiding double inclusion of the same cell id */
-        if (!gameStatus.good_input_ids.includes(cell_id)) {
-
-            gameStatus.good_input_ids.push(cell_id)
-            gameStatus.bad_input_ids.splice(gameStatus.bad_input_ids.indexOf(cell_id), 1)
-        }
-    }
-}
-
-/* selects the cell's row, collumn and square */
-function badInput(cell_id, number) {
+/* checks the current cell input */
+function inputCheck(cell_id, number) {
 
     /* selecting the row */
     for (let row of gameStatus.rows) {
         if (row.includes(cell_id)) {
-            if (cellCheck(row, number)) {
+            if (badInput(row, number)) {
                 /* avoiding double inclusion in array */
                 if (!gameStatus.bad_input_ids.includes(cell_id)) {
                     gameStatus.bad_input_ids.push(cell_id)
@@ -205,7 +184,7 @@ function badInput(cell_id, number) {
     /* selecting the collumn */
     for (let collumn of gameStatus.collumns) {
         if (collumn.includes(cell_id)) {
-            if (cellCheck(collumn, number)) {
+            if (badInput(collumn, number)) {
                 if (!gameStatus.bad_input_ids.includes(cell_id)) {
                     gameStatus.bad_input_ids.push(cell_id)
                 }
@@ -217,7 +196,7 @@ function badInput(cell_id, number) {
     /* selecting the square */
     for (let square of gameStatus.squares) {
         if (square.includes(cell_id)) {
-            if (cellCheck(square, number)) {
+            if (badInput(square, number)) {
                 if (!gameStatus.bad_input_ids.includes(cell_id)) {
                     gameStatus.bad_input_ids.push(cell_id)
                 }
@@ -232,8 +211,8 @@ function badInput(cell_id, number) {
 
 }
 
-/* checks the equality of cells in the array and the current cell */
-function cellCheck(game_array, number) {
+/* checks the equality between cells in the array and the current cell */
+function badInput(game_array, number) {
 
     /* the counter stores the number of cells that are
     equal to the current cell (current cell is always equal to it) */
@@ -249,6 +228,22 @@ function cellCheck(game_array, number) {
 
     return false
 }
+
+/* checks win after input */
+function checkWin() {
+    if (gameStatus.grid_ids.length == gameStatus.good_input_ids.length) {
+        alert("You WON!")
+        document.location.reload()
+    }
+}
+
+/* generates a random whole number between min and max */
+function randomNumberGenerator(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+
+/* Styling and display functions */
 
 /* selects the row, column and square nearby cells */
 function selectCells(cell_id) {
@@ -290,14 +285,6 @@ function unselectCells() {
 
 }
 
-/* checks win after input */
-function checkWin() {
-    if (gameStatus.grid_ids.length == gameStatus.good_input_ids.length) {
-        alert("You WON!")
-        document.location.reload()
-    }
-}
-
 /* styles the table cells as default */
 function defaultCellStyle(cell_id) {
     document.getElementById(cell_id).style.background = 'white'
@@ -322,9 +309,5 @@ function badInputStyle() {
     for (id of gameStatus.bad_input_ids) {
         document.getElementById(id).style.color = 'red'
     }
-}
-
-/* generates a random whole number between min and max */
-function randomNumberGenerator(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min
+    console.log(gameStatus.bad_input_ids)
 }
