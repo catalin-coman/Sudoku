@@ -85,11 +85,16 @@ function cellKeyboardEvent() {
     /* 1 --> 9 to input numbers, space to delete */
     window.addEventListener('keypress', function () {
         let current_cell = document.getElementById(parseInt(clickedCell.id))
-        current_cell.innerHTML = event.key
+        let input_number = event.key
         if (event.key == ' ') {
             current_cell.innerHTML = null
+
+        } else if (!inputCheck(parseInt(current_cell.id), input_number)) {
+            current_cell.innerHTML = input_number
+            checkWin()
+        } else if (inputCheck(parseInt(current_cell.id), input_number)) {
+            current_cell.innerHTML = input_number
         }
-        inputCheck(parseInt(current_cell.id), parseInt(current_cell.innerHTML))
 
     })
 
@@ -231,10 +236,10 @@ function badInput(game_array, number) {
 
 /* checks win after input */
 function checkWin() {
-    if (gameStatus.grid_ids.length == gameStatus.good_input_ids.length) {
-        alert("You WON!")
-        document.location.reload()
+    if (!parseInt(findEmptyCell())) {
+        alert ("You won!")
     }
+
 }
 
 /* generates a random whole number between min and max */
@@ -309,5 +314,4 @@ function badInputStyle() {
     for (id of gameStatus.bad_input_ids) {
         document.getElementById(id).style.color = 'red'
     }
-    console.log(gameStatus.bad_input_ids)
 }
